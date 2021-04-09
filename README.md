@@ -19,7 +19,7 @@ An easy to use class for writting texto into an SDL_Surface using SDL_ttf.
                         que vivía un hidalgo de los de lanza en astillero,
                         \nadarga antigua, rocín flaco y galgo corredor.", 10,50);
     
-    text->print(screen, "Uicode string:\nEn un lugar de la Mancha, 
+    text->print(screen, "Non-uicode string:\nEn un lugar de la Mancha, 
                         de cuyo nombre no quiero acordarme,\nno ha mucho tiempo 
                         que vivía un hidalgo de los de lanza en astillero,
                         \nadarga antigua, rocín flaco y galgo corredor.", 10,200);
