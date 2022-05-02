@@ -14,6 +14,7 @@ public:
    * @param fontColor Color of the text to write.
    */
   DrawText(const char *fontPath, int fontSize, const SDL_Color &fontColor);
+
   /**
    * @brief Destroys the alphabet and free memory.
    */
@@ -22,24 +23,37 @@ public:
   /**
    * @brief Print text on a given surface
    * @param destinationSurface Surface where the text will be written.
-   * @param string Text to write on the screen.
+   * @param text Text to write on the screen.
    * @param x Horizontal position of the text.
    * @param y Vertical position of the text.
    * @param ... Optional variables for the special characters in the string.
    */
-  void print(SDL_Surface *destinationSurface, const char *string, int x, int y,
-             ...);
+  void print(SDL_Surface *destinationSurface, const std::string& text, int x, int y);
+
   /**
    * @brief Print text on a given surface
    * @param destinationSurface Surface where the text will be written.
-   * @param string Unicode text to write on the screen.
+   * @param text Unicode text to write on the screen.
    * @param x Horizontal position of the text.
    * @param y Vertical position of the text.
-   * @param ... Optional variables for the special characters in the string.
    */
-  void print(SDL_Surface *destinationSurface, const wchar_t *string, int x,
-             int y, ...);
+  void print(SDL_Surface *destinationSurface, const std::wstring& text, int x, int y);
 
+  /**
+   * @brief Formats a string
+   * @param text The text or format specifier to convert
+   * @param ... Extra parameters to replace by the format specifier
+   * @return Resulting string after applying the format specifier
+   */
+  static std::string format(const std::string& text, ...);
+
+  /**
+   * @brief Formats a string
+   * @param text The text or format specifier to convert
+   * @param ... Extra parameters to replace by the format specifier
+   * @return Resulting string after applying the format specifier
+   */
+  static std::wstring format(const std::wstring& string, ...);
 private:
   /**
    * @brief Creates the glyphs that composes the alphabet.
