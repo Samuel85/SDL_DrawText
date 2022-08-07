@@ -105,7 +105,7 @@ void DrawText::print(SDL_Surface* destinationSurface, const std::wstring& text, 
         drawGlyphW(destinationSurface, *character, tmp_x, tmp_y);
     }
 }
-std::string DrawText::format(const std::string& text, ...)
+std::string DrawText::format(const std::string text, ...)
 {
     std::string a;
 
@@ -120,7 +120,7 @@ std::string DrawText::format(const std::string& text, ...)
     return a;
 }
 
-std::wstring DrawText::format(const std::wstring& text, ...)
+std::wstring DrawText::format(const std::wstring text, ...)
 {
     std::wstring out;
     wchar_t buffer[BUFFER_SIZE] = {};

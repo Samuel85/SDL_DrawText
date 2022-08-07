@@ -45,7 +45,7 @@ public:
    * @param ... Extra parameters to replace by the format specifier
    * @return Resulting string after applying the format specifier
    */
-  static std::string format(const std::string& text, ...);
+  static std::string format(const std::string text, ...);
 
   /**
    * @brief Formats a string
@@ -53,7 +53,7 @@ public:
    * @param ... Extra parameters to replace by the format specifier
    * @return Resulting string after applying the format specifier
    */
-  static std::wstring format(const std::wstring& string, ...);
+  static std::wstring format(const std::wstring string, ...);
 private:
   /**
    * @brief Creates the glyphs that composes the alphabet.
