@@ -1,15 +1,17 @@
+#include "drawtext.h"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include <iostream>
 
-#include "drawtext.h"
+#include <iostream>
+#include <sstream>
 
 SDL_Renderer* renderer;
 SDL_Window* window;
 SDL_Surface* screen;
 SDL_Texture* texture;
 
-int init()
+void init()
 {
 	static constexpr int WINDOW_WIDTH = 800;
 	static constexpr int WINDOW_HEIGHT = 600;
@@ -19,14 +21,16 @@ int init()
 
 	window = SDL_CreateWindow("Examples", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN);
 	if (window == NULL) {
-		std::cout << "Could not create window: " << SDL_GetError() << std::endl;
-		return -1;
+		std::stringstream out;
+		out << "Can't create window: " << SDL_GetError();
+		throw std::runtime_error(out.str());
 	}
 
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	if (renderer == NULL) {
-		std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
-		return -1;
+		std::stringstream out;
+		out << "Can't create render: " << SDL_GetError();
+		throw std::runtime_error(out.str());
 	}
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -38,10 +42,10 @@ int init()
 	texture = SDL_CreateTextureFromSurface(renderer, screen);
 
 	if (TTF_Init() < 0) {
-		std::cout << "Can't init TTF: " << SDL_GetError() << std::endl;
-		return -1;
+		std::stringstream out;
+		out << "Can't init TTF: " << SDL_GetError();
+		throw std::runtime_error(out.str());
 	}
-	return 0;
 }
 
 void updateScreen()
@@ -56,7 +60,7 @@ void mainLoop()
 	static constexpr unsigned int MINIMUM_FRAME_TIME = 10;
 
 	SDL_Event event;
-	bool quit = false;
+	auto quit = false;
 	unsigned int initialTime = 0;
 
 	while (!quit) {
