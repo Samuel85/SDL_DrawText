@@ -6,6 +6,7 @@
 
 #include <string>
 #include <array>
+#include <type_traits>
 
 class DrawText {
 public:
@@ -20,26 +21,40 @@ public:
 	/**
 	 * @brief Destroys the alphabet and free memory.
 	 */
-	~DrawText();
+	virtual ~DrawText();
 
-	/**
-	 * @brief Print text on a given surface
-	 * @param destinationSurface Surface where the text will be written.
-	 * @param text Text to write on the screen.
-	 * @param x Horizontal position of the text.
-	 * @param y Vertical position of the text.
-	 * @param ... Optional variables for the special characters in the string.
-	 */
-	void print(SDL_Surface* destinationSurface, const std::string& text, int x, int y);
+	 /**
+	  * @brief Print text on a given surface
+	  * @param destinationSurface Surface where the text will be written.
+	  * @param text Unicode text to write on the screen.
+	  * @param x Horizontal position of the text.
+	  * @param y Vertical position of the text.
+	  */
+	template <typename T>
+	void print(SDL_Surface* destinationSurface, T const & text, int x, int y)
+	{
+		auto tmp_x = x;
+		auto tmp_y = y;
 
-	/**
-	 * @brief Print text on a given surface
-	 * @param destinationSurface Surface where the text will be written.
-	 * @param text Unicode text to write on the screen.
-	 * @param x Horizontal position of the text.
-	 * @param y Vertical position of the text.
-	 */
-	void print(SDL_Surface* destinationSurface, const std::wstring& text, int x, int y);
+		auto process_elements = [&](auto temp_string) ->void {
+			for (auto& c : temp_string) {
+				if (newLine_) {
+					tmp_x = x;
+					newLine_ = false;
+				}
+				drawGlyphW(destinationSurface, static_cast<unsigned char>(c), tmp_x, tmp_y);
+			}
+		};
+
+		if constexpr (std::is_convertible_v<T, std::string>) {
+			std::string t = text;
+			process_elements(t);
+		}
+		else if constexpr (std::is_convertible_v<T, std::wstring>) {
+			std::wstring t = text;
+			process_elements(t);
+		}
+	}
 
 	/**
 	 * @brief Formats a string
@@ -68,22 +83,12 @@ private:
 	/**
 	 * @brief Draw a glyph on the screen
 	 * @param destinationSurface Surface where the character will be written.
-	 * @param character Character to write on the screen.
-	 * @param x Horizontal position for the glyph.
-	 * @param y Vertical position for the glyph.
-	 */
-	void drawGlyph(SDL_Surface* destinationSurface, unsigned char character,
-		int& x, int& y);
-	/**
-	 * @brief Draw a glyph on the screen
-	 * @param destinationSurface Surface where the character will be written.
 	 * @param character Unicode character to write on the screen.
 	 * @param x Horizontal position for the glyph.
 	 * @param y Vertical position for the glyph.
 	 */
-	void drawGlyphW(SDL_Surface* destinationSurface, wchar_t character, int& x,
+	void drawGlyphW(SDL_Surface* destinationSurface, unsigned char character, int& x,
 		int& y);
-
 
 	/// Initial character for the alphabet.
 	int initialCharacter_;

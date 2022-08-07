@@ -96,10 +96,10 @@ int main(int argc, char* argv[])
 	SDL_Color white = { 255, 255, 255, 0 };
 	SDL_Color red = { 255, 0, 0, 0 };
 
-	auto* text = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 25, white);
-	auto* redText = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 20, red);
+	auto* text = new DrawText("fonts/times.ttf", 25, white);
+	auto* redText = new DrawText("fonts/times.ttf", 20, red);
 
-	// Print some text
+	
 	text->print(screen, L"Uicode string:\nEn un lugar de la Mancha,"
 		"de cuyo nombre no quiero acordarme,\nno ha mucho tiempo"
 		"que vivía un hidalgo de los de lanza en astillero,"

@@ -31,12 +31,11 @@ DrawText::~DrawText()
 void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
 {
 	for (auto c = initialCharacter_; c < finalCharacter_; c++) {
-		alphabet[c - initialCharacter_] = TTF_RenderGlyph_Blended(font, c, fontColor);
+		alphabet[c - initialCharacter_] = TTF_RenderGlyph_Blended(font, static_cast<uint16_t>(c), fontColor);		
 	}
 }
 
-void DrawText::drawGlyph(SDL_Surface* destinationSurface, const unsigned char character, int& x,
-	int& y)
+void DrawText::drawGlyphW(SDL_Surface* destinationSurface, unsigned char character, int& x, int& y)
 {
 	if (character == '\n') {
 		SDL_Surface* glyph = alphabet[0];
@@ -44,9 +43,8 @@ void DrawText::drawGlyph(SDL_Surface* destinationSurface, const unsigned char ch
 		newLine_ = true;
 		return;
 	}
-
-	auto i = static_cast<size_t>(character - initialCharacter_);
-	if (i >= totalCharacters_) {
+	auto i = character - static_cast<size_t>(initialCharacter_);
+	if (i >= totalCharacters_) {		
 		throw std::logic_error("Trying to access a glyph outside of the limits");
 	}
 	SDL_Surface* glyph = alphabet[i];
@@ -61,57 +59,6 @@ void DrawText::drawGlyph(SDL_Surface* destinationSurface, const unsigned char ch
 	SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
 }
 
-void DrawText::drawGlyphW(SDL_Surface* destinationSurface, const wchar_t character, int& x, int& y)
-{
-	if (character == '\n') {
-		SDL_Surface* glyph = alphabet[0];
-		y = y + glyph->h;
-		newLine_ = true;
-		return;
-	}
-	auto i = static_cast<size_t>(character - initialCharacter_);
-	if (i >= totalCharacters_) {
-		throw std::logic_error("Trying to access a glyph outside of the limits");
-	}
-	SDL_Surface* glyph = alphabet[i];
-
-	SDL_Rect dst_rect;
-	dst_rect.x = x;
-	dst_rect.y = y;
-	dst_rect.w = glyph->w;
-	dst_rect.h = glyph->h;
-
-	x = x + glyph->w;
-	SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
-}
-
-void DrawText::print(SDL_Surface* destinationSurface, const std::string& text, int x, int y)
-{
-	auto tmp_x = x;
-	auto tmp_y = y;
-
-	for (const char* c = text.c_str(); *c != '\0'; c++) {
-		if (newLine_) {
-			tmp_x = x;
-			newLine_ = false;
-		}
-		drawGlyph(destinationSurface, *c, tmp_x, tmp_y);
-	}
-}
-
-void DrawText::print(SDL_Surface* destinationSurface, const std::wstring& text, int x, int y)
-{
-	auto tmp_x = x;
-	auto tmp_y = y;
-
-	for (auto character = text.c_str(); *character != '\0'; character++) {
-		if (newLine_) {
-			tmp_x = x;
-			newLine_ = false;
-		}
-		drawGlyphW(destinationSurface, *character, tmp_x, tmp_y);
-	}
-}
 std::string DrawText::format(const std::string text, ...)
 {
 	char buffer[BUFFER_SIZE] = {};
