@@ -16,21 +16,15 @@ elseif (${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 	else()
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 	endif()
+
 endif()
 
-find_package(SDL2 REQUIRED)
-find_package(SDL2_Image REQUIRED)
-find_package(SDL2_Mixer REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-include_directories(${SDL2_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_ttf_INCLUDE_DIR})
-
-#file(COPY uNext/files DESTINATION .)
-
-#include_directories(uNext)
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 file(GLOB_RECURSE test_SOURCES "src/*.cpp" "src/*.h")
 add_executable (test ${test_SOURCES})
 
-target_link_libraries(test ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_TTF_LIBRARY})
+target_link_libraries(test ${CONAN_LIBS})
 
 install(TARGETS test RUNTIME DESTINATION ${BIN_DIR})
