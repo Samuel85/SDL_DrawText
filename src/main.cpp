@@ -19,8 +19,8 @@ void init()
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("Examples", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800,
-                              600, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Examples", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                              WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL) {
         std::stringstream out;
         out << "Can't create window: " << SDL_GetError();
@@ -103,14 +103,14 @@ int main(int argc, char* argv[])
     auto* redText = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 20, red);
 
     text->print(screen,
-                L"Unicode string:\nEn un lugar de la Mancha,\n"
+                L"Unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
                 "que vivía un hidalgo de los de lanza en astillero,\n"
                 "adarga antigua, rocín flaco y galgo corredor.",
                 10, 50);
 
     text->print(screen,
-                "Non-unicode string:\nEn un lugar de la Mancha,\n"
+                "Non-unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
                 "que vivía un hidalgo de los de lanza en astillero,\n"
                 "adarga antigua, rocín flaco y galgo corredor.",

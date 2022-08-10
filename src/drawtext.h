@@ -38,7 +38,7 @@ class DrawText
         auto tmp_y = y;
 
         auto process_elements = [&](auto& temp_string) -> void {
-            for (auto c = std::begin(temp_string); *c != '\0'; c++) {
+            for (auto c = std::begin(temp_string); c != std::end(temp_string) && *c != '\0'; c++) {
                 if (newLine_) {
                     tmp_x = x;
                     newLine_ = false;
