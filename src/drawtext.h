@@ -4,7 +4,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#include <array>
 #include <string>
 #include <type_traits>
 
@@ -34,10 +33,9 @@ class DrawText
      */
     template <typename T> void print(SDL_Surface* destinationSurface, T const& text, int x, int y)
     {
-        auto tmp_x = x;
-        auto tmp_y = y;
-
         auto process_elements = [&](auto& temp_string) -> void {
+            auto tmp_x = x;
+            auto tmp_y = y;
             for (auto c = std::begin(temp_string); c != std::end(temp_string) && *c != '\0'; c++) {
                 if (newLine_) {
                     tmp_x = x;
@@ -95,7 +93,7 @@ class DrawText
     ///  Total number of characters in alphabet.
     size_t totalCharacters_;
 
-    SDL_Surface** alphabet;
+    SDL_Surface** alphabet_;
 
     bool newLine_{false};
 };

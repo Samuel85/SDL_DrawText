@@ -9,7 +9,7 @@ DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fo
                    int initialCharacter, int finalCharacter)
     : initialCharacter_{initialCharacter}, finalCharacter_{finalCharacter},
       totalCharacters_{static_cast<size_t>(finalCharacter_ - initialCharacter_)},
-      alphabet{new SDL_Surface*[totalCharacters_]}
+      alphabet_{new SDL_Surface*[totalCharacters_]}
 {
     if (totalCharacters_ <= 0) {
         throw std::logic_error("The final character must be bigger than the initial character.");
@@ -27,13 +27,13 @@ DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fo
 
 DrawText::~DrawText()
 {
-    delete[] alphabet;
+    delete[] alphabet_;
 }
 
 void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
 {
     for (auto c = initialCharacter_; c < finalCharacter_; c++) {
-        alphabet[c - initialCharacter_] =
+        alphabet_[c - initialCharacter_] =
             TTF_RenderGlyph_Blended(font, static_cast<uint16_t>(c), fontColor);
     }
 }
@@ -41,7 +41,7 @@ void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
 void DrawText::drawGlyphW(SDL_Surface* destinationSurface, unsigned char character, int& x, int& y)
 {
     if (character == '\n') {
-        SDL_Surface* glyph = alphabet[0];
+        SDL_Surface* glyph = alphabet_[0];
         y = y + glyph->h;
         newLine_ = true;
         return;
@@ -50,13 +50,8 @@ void DrawText::drawGlyphW(SDL_Surface* destinationSurface, unsigned char charact
     if (i >= totalCharacters_) {
         throw std::logic_error("Trying to access a glyph outside of the limits");
     }
-    SDL_Surface* glyph = alphabet[i];
-
-    SDL_Rect dst_rect;
-    dst_rect.x = x;
-    dst_rect.y = y;
-    dst_rect.w = glyph->w;
-    dst_rect.h = glyph->h;
+    auto* glyph = alphabet_[i];
+    SDL_Rect dst_rect = {x, y, glyph->w, glyph->h};
 
     x = x + glyph->w;
     SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
