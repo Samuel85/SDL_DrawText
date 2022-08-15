@@ -93,7 +93,6 @@ void quit()
 
 int main(int argc, char* argv[])
 {
-
     init();
 
     //// Init DrawText object
@@ -104,17 +103,17 @@ int main(int argc, char* argv[])
     auto* redText = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 20, red);
 
     text->print(screen,
-                L"Non-unicode string\nEn un lugar de la Mancha,\n"
+                L"Unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivía un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocín flaco y galgo corredor.",
+                "que vivï¿½a un hidalgo de los de lanza en astillero,\n"
+                "adarga antigua, rocï¿½n flaco y galgo corredor.",
                 10, 50);
 
     text->print(screen,
                 L"Non-unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivía un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocín flaco y galgo corredor.",
+                "que vivï¿½a un hidalgo de los de lanza en astillero,\n"
+                "adarga antigua, rocï¿½n flaco y galgo corredor.",
                 10, 200);
 
     redText->print(screen, DrawText::format("Pi=%f", 3.141592), 10, 350);
