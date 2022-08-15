@@ -35,11 +35,11 @@ void init()
     }
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0xff000000,
-                                  0x00ff0000, 0x0000ff00, 0x000000ff);
+     screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0xff000000,
+                                   0x00ff0000, 0x0000ff00, 0x000000ff);
 #else
-    screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0x000000ff,
-                                  0x0000ff00, 0x00ff0000, 0xff000000);
+    screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0,
+                                  0, 0, 0);
 #endif
 
     texture = SDL_CreateTextureFromSurface(renderer, screen);
@@ -105,15 +105,15 @@ int main(int argc, char* argv[])
     text->print(screen,
                 L"Unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivï¿½a un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocï¿½n flaco y galgo corredor.",
+                "que vivía un hidalgo de los de lanza en astillero,\n"
+                "adarga antigua, rocín flaco y galgo corredor.",
                 10, 50);
 
     text->print(screen,
                 L"Non-unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivï¿½a un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocï¿½n flaco y galgo corredor.",
+                "que vivía un hidalgo de los de lanza en astillero,\n"
+                "adarga antigua, rocín flaco y galgo corredor.",
                 10, 200);
 
     redText->print(screen, DrawText::format("Pi=%f", 3.141592), 10, 350);
