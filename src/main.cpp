@@ -93,9 +93,10 @@ void quit()
 
 int main(int argc, char* argv[])
 {
+
     init();
 
-    // Init DrawText object
+    //// Init DrawText object
     SDL_Color white = {255, 255, 255, 0};
     SDL_Color red = {255, 0, 0, 0};
 
@@ -103,23 +104,24 @@ int main(int argc, char* argv[])
     auto* redText = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 20, red);
 
     text->print(screen,
-                L"Unicode string\nEn un lugar de la Mancha,\n"
+                L"Non-unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivÃ­a un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocÃ­n flaco y galgo corredor.",
+                "que vivía un hidalgo de los de lanza en astillero,\n"
+                "adarga antigua, rocín flaco y galgo corredor.",
                 10, 50);
 
     text->print(screen,
-                "Non-unicode string\nEn un lugar de la Mancha,\n"
+                L"Non-unicode string\nEn un lugar de la Mancha,\n"
                 "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivÃ­a un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocÃ­n flaco y galgo corredor.",
+                "que vivía un hidalgo de los de lanza en astillero,\n"
+                "adarga antigua, rocín flaco y galgo corredor.",
                 10, 200);
 
     redText->print(screen, DrawText::format("Pi=%f", 3.141592), 10, 350);
 
     mainLoop();
 
-    quit();
+    // quit();
+
     return 0;
 }
