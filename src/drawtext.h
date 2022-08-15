@@ -17,7 +17,7 @@ class DrawText
      * @param fontColor Color of the text to write.
      */
     DrawText(const char* fontPath, int fontSize, const SDL_Color& fontColor,
-             int initialCharacter = 32, int finalCharacter = 255);
+             uint16_t initialCharacter = 32, uint16_t finalCharacter = 255);
 
     /**
      * @brief Destroys the alphabet and free memory.
@@ -41,7 +41,7 @@ class DrawText
                     tmp_x = x;
                     newLine_ = false;
                 }
-                drawGlyphW(destinationSurface, static_cast<unsigned char>(*c), tmp_x, tmp_y);
+                drawGlyph(destinationSurface, static_cast<unsigned char>(*c), tmp_x, tmp_y);
             }
         };
 
@@ -84,12 +84,12 @@ class DrawText
      * @param x Horizontal position for the glyph.
      * @param y Vertical position for the glyph.
      */
-    void drawGlyphW(SDL_Surface* destinationSurface, unsigned char character, int& x, int& y);
+    void drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y);
 
     /// Initial character for the alphabet.
-    int initialCharacter_;
+    uint16_t initialCharacter_;
     /// Final character for the alphabet.
-    int finalCharacter_;
+    uint16_t finalCharacter_;
     ///  Total number of characters in alphabet.
     size_t totalCharacters_;
 

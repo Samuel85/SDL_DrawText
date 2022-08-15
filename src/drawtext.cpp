@@ -6,7 +6,7 @@
 #include <string>
 
 DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fontColor,
-                   int initialCharacter, int finalCharacter)
+                   uint16_t initialCharacter, uint16_t finalCharacter)
     : initialCharacter_{initialCharacter}, finalCharacter_{finalCharacter},
       totalCharacters_{static_cast<size_t>(finalCharacter_ - initialCharacter_)},
       alphabet_{new SDL_Surface*[totalCharacters_]}
@@ -33,20 +33,23 @@ DrawText::~DrawText()
 void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
 {
     for (auto c = initialCharacter_; c < finalCharacter_; c++) {
-        alphabet_[c - initialCharacter_] =
-            TTF_RenderGlyph_Blended(font, static_cast<uint16_t>(c), fontColor);
+        auto glyph = TTF_RenderGlyph_Blended(font, c, fontColor);
+        if (glyph == NULL) {
+            throw std::runtime_error("Error creating alphabet");
+        }
+        alphabet_[c - initialCharacter_] = glyph;
     }
 }
 
-void DrawText::drawGlyphW(SDL_Surface* destinationSurface, unsigned char character, int& x, int& y)
+void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y)
 {
     if (character == '\n') {
-        SDL_Surface* glyph = alphabet_[0];
+        auto* glyph = alphabet_[0];
         y = y + glyph->h;
         newLine_ = true;
         return;
     }
-    auto i = character - static_cast<size_t>(initialCharacter_);
+    auto i = character - initialCharacter_;
     if (i >= totalCharacters_) {
         throw std::logic_error("Trying to access a glyph outside of the limits");
     }
