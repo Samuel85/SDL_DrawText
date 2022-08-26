@@ -42,12 +42,12 @@ class DrawText
     {
         auto tmp_x = x;
         auto tmp_y = y;
-        for (auto c = std::begin(text); c != std::end(text) && *c != '\0'; c++) {
+        for (auto c = std::begin(text); c != std::end(text) && *c != '\0'; ++c) {
             if (newLine_) {
                 tmp_x = x;
                 newLine_ = false;
             }
-            drawGlyph(destinationSurface, static_cast<uint16_t>(*c), tmp_x, tmp_y);
+            drawGlyph(destinationSurface,*c, tmp_x, tmp_y);
         }
     }
 
@@ -83,7 +83,7 @@ class DrawText
         return result;
     }
 
-  private:    
+  private:
     /**
      * @brief Creates the glyphs that composes the alphabet.
      * @param font Pointer to the TTF_Font that contains a valid font.

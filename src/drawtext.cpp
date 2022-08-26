@@ -35,9 +35,9 @@ DrawText::~DrawText()
 
 void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
 {
-    for (auto c = initialCharacter_; c <= finalCharacter_; c++) {
-        auto glyph = TTF_RenderGlyph_Blended(font, c, fontColor);
-        if (glyph == NULL) {
+    for (uint16_t c = initialCharacter_; c <= finalCharacter_; c++) {
+        auto* glyph = TTF_RenderGlyph_Blended(font, c, fontColor);
+        if (glyph == nullptr) {
             throw std::runtime_error("Error creating alphabet");
         }
         alphabet_[c] = glyph;
@@ -52,7 +52,7 @@ void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, in
             return glyph;
         } catch (std::out_of_range& e) {
             std::stringstream out;
-            out << "Exception trying to get element " << std::to_string(c)
+            out << "Out of range exc. Trying to get element " << std::to_string(c)
                 << "  from alphabet with limits [" << std::to_string(initialCharacter_) << ";"
                 << std::to_string(finalCharacter_) << "]." << static_cast<char>(c)
                 << std::endl;
