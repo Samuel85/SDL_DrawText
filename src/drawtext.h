@@ -5,11 +5,11 @@
 #include <SDL2/SDL_ttf.h>
 
 #include <cstdio>
+#include <cwchar>
+#include <map>
 #include <string>
 #include <type_traits>
 #include <utility>
-
-#include <cwchar>
 
 class DrawText
 {
@@ -21,7 +21,7 @@ class DrawText
      * @param fontColor Color of the text to write.
      */
     DrawText(const char* fontPath, int fontSize, const SDL_Color& fontColor,
-             uint16_t initialCharacter = 32, uint16_t finalCharacter = 255);
+             uint16_t initialCharacter = 5, uint16_t finalCharacter = 255);
 
     /**
      * @brief Destroys the alphabet and free memory.
@@ -34,6 +34,7 @@ class DrawText
      * @param text Unicode text to write on the screen.
      * @param x Horizontal position of the text.
      * @param y Vertical position of the text.
+     * @throw Out of range if the string contains characters not contained in the alphabet
      */
     template <typename T, typename = std::enable_if<std::is_integral<T>::value, std::string>,
               typename = std::enable_if<std::is_integral<T>::value, std::wstring>>
@@ -46,7 +47,7 @@ class DrawText
                 tmp_x = x;
                 newLine_ = false;
             }
-            drawGlyph(destinationSurface, static_cast<unsigned char>(*c), tmp_x, tmp_y);
+            drawGlyph(destinationSurface, static_cast<uint16_t>(*c), tmp_x, tmp_y);
         }
     }
 
@@ -82,8 +83,7 @@ class DrawText
         return result;
     }
 
-  private:
-    static constexpr size_t BUFFER_SIZE = 255;
+  private:    
     /**
      * @brief Creates the glyphs that composes the alphabet.
      * @param font Pointer to the TTF_Font that contains a valid font.
@@ -102,12 +102,11 @@ class DrawText
 
     /// Initial character for the alphabet.
     uint16_t initialCharacter_;
+
     /// Final character for the alphabet.
     uint16_t finalCharacter_;
-    ///  Total number of characters in alphabet.
-    size_t totalCharacters_;
 
-    SDL_Surface** alphabet_;
+    std::map<uint16_t, SDL_Surface*> alphabet_;
 
     bool newLine_{false};
 };

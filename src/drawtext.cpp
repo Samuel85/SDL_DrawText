@@ -1,6 +1,7 @@
 #include "drawtext.h"
 
 #include <cstdio>
+#include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -8,11 +9,9 @@
 
 DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fontColor,
                    uint16_t initialCharacter, uint16_t finalCharacter)
-    : initialCharacter_{initialCharacter}, finalCharacter_{finalCharacter},
-      totalCharacters_{static_cast<size_t>(finalCharacter_ - initialCharacter_)},
-      alphabet_{new SDL_Surface*[totalCharacters_]}
+    : initialCharacter_{initialCharacter}, finalCharacter_{finalCharacter}
 {
-    if (totalCharacters_ <= 0) {
+    if (finalCharacter_ - initialCharacter_ <= 0) {
         throw std::logic_error("The final character must be bigger than the initial character.");
     }
 
@@ -28,35 +27,55 @@ DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fo
 
 DrawText::~DrawText()
 {
-    delete[] alphabet_;
+    for (std::map<uint16_t, SDL_Surface*>::iterator it = alphabet_.begin(); it != alphabet_.end();
+         it++) {
+        SDL_FreeSurface(it->second);
+    }
 }
 
 void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
 {
-    for (auto c = initialCharacter_; c < finalCharacter_; c++) {
+    for (auto c = initialCharacter_; c <= finalCharacter_; c++) {
         auto glyph = TTF_RenderGlyph_Blended(font, c, fontColor);
         if (glyph == NULL) {
             throw std::runtime_error("Error creating alphabet");
         }
-        alphabet_[c - initialCharacter_] = glyph;
+        alphabet_[c] = glyph;
     }
 }
 
 void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y)
 {
-    if (character == '\n') {
-        auto* glyph = alphabet_[0];
+    auto get_glyph_of_character = [&](uint16_t c) -> SDL_Surface* {
+        try {
+            auto* glyph = alphabet_.at(c);
+            return glyph;
+        } catch (std::out_of_range& e) {
+            std::stringstream out;
+            out << "Exception trying to get element " << std::to_string(c)
+                << "  from alphabet with limits [" << std::to_string(initialCharacter_) << ";"
+                << std::to_string(finalCharacter_) << "]." << static_cast<char>(c)
+                << std::endl;
+
+            std::cout << out.str();
+        }
+        return nullptr;
+    };
+    if (character == static_cast<uint16_t>('\n')) {
+        auto* glyph = get_glyph_of_character(initialCharacter_);
+        if (glyph == nullptr) {
+            return;
+        }
         y = y + glyph->h;
         newLine_ = true;
         return;
     }
-    auto i = character - initialCharacter_;
-    if (i >= totalCharacters_) {
-        throw std::logic_error("Trying to access a glyph outside of the limits");
-    }
-    auto* glyph = alphabet_[i];
-    SDL_Rect dst_rect = {x, y, glyph->w, glyph->h};
 
+    auto* glyph = get_glyph_of_character(character);
+    if (glyph == nullptr) {
+        return;
+    }
+    SDL_Rect dst_rect = {x, y, glyph->w, glyph->h};
     x = x + glyph->w;
     SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
 }
