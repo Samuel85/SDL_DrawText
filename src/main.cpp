@@ -19,7 +19,7 @@ void init()
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    window = SDL_CreateWindow("Examples", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    window = SDL_CreateWindow("Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL) {
         std::stringstream out;
@@ -94,28 +94,29 @@ int main(int argc, char* argv[])
 {
     init();
 
-    //// Init DrawText object
+    // Init DrawText object
     SDL_Color white = {255, 255, 255, 0};
     SDL_Color red = {255, 0, 0, 0};
 
     auto* text = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 25, white);
     auto* redText = new DrawText("fonts/OfenbacherSchwabCAT.ttf", 20, red);
 
+    // Print some text
     text->print(screen,
-                L"Unicode string\nEn un lugar de la Mancha,\n"
-                "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivía un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocín flaco y galgo corredor.",
+                DrawText::format(L"Uicode string:\nEn un lugar de la Mancha,"
+                                 "de cuyo nombre no quiero acordarme,\nno ha mucho tiempo"
+                                 "que vivía un hidalgo de los de lanza en astillero,"
+                                 "\nadarga antigua, rocín flaco y galgo corredor."),
                 10, 50);
 
     text->print(screen,
-                L"Non-unicode string\nEn un lugar de la Mancha,\n"
-                "de cuyo nombre no quiero acordarme, no ha mucho tiempo\n"
-                "que vivía un hidalgo de los de lanza en astillero,\n"
-                "adarga antigua, rocín flaco y galgo corredor.",
+                DrawText::format("Non-uicode string:\nEn un lugar de la Mancha,"
+                                 "de cuyo nombre no quiero acordarme,\nno ha mucho tiempo"
+                                 "que vivía un hidalgo de los de lanza en astillero,"
+                                 "\nadarga antigua, rocín flaco y galgo corredor."),
                 10, 200);
 
-    redText->print(screen, L"test", 10, 350);
+    redText->print(screen, DrawText::format("Pi=%f", 3.141592), 10, 350);
 
     mainLoop();
 

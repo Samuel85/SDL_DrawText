@@ -61,7 +61,7 @@ void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, in
     SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
 }
 
-//std::string DrawText::format(const std::string text, ...)
+// std::string DrawText::format(const std::string text, ...)
 //{
 //    char buffer[BUFFER_SIZE] = {};
 //    {
@@ -74,7 +74,7 @@ void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, in
 //    return {buffer};
 //}
 //
-//std::wstring DrawText::format(const std::wstring text, ...)
+// std::wstring DrawText::format(const std::wstring text, ...)
 //{
 //    wchar_t buffer[BUFFER_SIZE] = {};
 //    {
