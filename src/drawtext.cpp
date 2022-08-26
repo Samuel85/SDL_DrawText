@@ -4,6 +4,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fontColor,
                    uint16_t initialCharacter, uint16_t finalCharacter)
@@ -60,27 +61,27 @@ void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, in
     SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
 }
 
-std::string DrawText::format(const std::string text, ...)
-{
-    char buffer[BUFFER_SIZE] = {};
-    {
-        va_list list;
-        va_start(list, text);
-        vsnprintf(buffer, BUFFER_SIZE, text.c_str(), list);
-        va_end(list);
-    };
-
-    return {buffer};
-}
-
-std::wstring DrawText::format(const std::wstring text, ...)
-{
-    wchar_t buffer[BUFFER_SIZE] = {};
-    {
-        va_list list;
-        va_start(list, text);
-        vswprintf(buffer, BUFFER_SIZE, text.c_str(), list);
-        va_end(list);
-    };
-    return {buffer};
-}
+//std::string DrawText::format(const std::string text, ...)
+//{
+//    char buffer[BUFFER_SIZE] = {};
+//    {
+//        va_list list;
+//        va_start(list, text);
+//        vsnprintf(buffer, BUFFER_SIZE, text.c_str(), list);
+//        va_end(list);
+//    };
+//
+//    return {buffer};
+//}
+//
+//std::wstring DrawText::format(const std::wstring text, ...)
+//{
+//    wchar_t buffer[BUFFER_SIZE] = {};
+//    {
+//        va_list list;
+//        va_start(list, text);
+//        vswprintf(buffer, BUFFER_SIZE, text.c_str(), list);
+//        va_end(list);
+//    };
+//    return {buffer};
+//}

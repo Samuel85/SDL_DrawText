@@ -35,11 +35,10 @@ void init()
     }
 
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-     screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0xff000000,
-                                   0x00ff0000, 0x0000ff00, 0x000000ff);
+    screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0xff000000,
+                                  0x00ff0000, 0x0000ff00, 0x000000ff);
 #else
-    screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0,
-                                  0, 0, 0);
+    screen = SDL_CreateRGBSurface(0, WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_BPP, 0, 0, 0, 0);
 #endif
 
     texture = SDL_CreateTextureFromSurface(renderer, screen);
@@ -116,11 +115,11 @@ int main(int argc, char* argv[])
                 "adarga antigua, rocín flaco y galgo corredor.",
                 10, 200);
 
-    redText->print(screen, DrawText::format("Pi=%f", 3.141592), 10, 350);
+    redText->print(screen, L"test", 10, 350);
 
     mainLoop();
 
-    // quit();
+    quit();
 
     return 0;
 }
