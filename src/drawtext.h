@@ -21,7 +21,8 @@ class DrawText
      * @param fontColor Color of the text to write.
      */
     DrawText(const char* fontPath, int fontSize, const SDL_Color& fontColor,
-             uint16_t initialCharacter = 5, uint16_t finalCharacter = 255);
+             uint16_t initialCharacter = 5, uint16_t finalCharacter = 255,
+             bool throwExceptions = false);
 
     /**
      * @brief Destroys the alphabet and free memory.
@@ -34,11 +35,14 @@ class DrawText
      * @param text Unicode text to write on the screen.
      * @param x Horizontal position of the text.
      * @param y Vertical position of the text.
+     * @param width Sets a maximum width for the text. 0 for no limitations.
+     * @param height Sets a maxium height for the text. 0 for no limitations.
      * @throw Out of range if the string contains characters not contained in the alphabet
      */
     template <typename T, typename = std::enable_if<std::is_integral<T>::value, std::string>,
               typename = std::enable_if<std::is_integral<T>::value, std::wstring>>
-    void print(SDL_Surface* destinationSurface, T const& text, int x, int y)
+    void print(SDL_Surface* destinationSurface, T const& text, int x, int y, int width = 0,
+               int height = 0)
     {
         auto tmp_x = x;
         auto tmp_y = y;
@@ -47,7 +51,7 @@ class DrawText
                 tmp_x = x;
                 newLine_ = false;
             }
-            drawGlyph(destinationSurface,*c, tmp_x, tmp_y);
+            drawGlyph(destinationSurface, *c, tmp_x, tmp_y, Constrain{x, y, width, height});
         }
     }
 
@@ -84,6 +88,12 @@ class DrawText
     }
 
   private:
+    struct Constrain {
+        int x0{0};
+        int y0{0};
+        int width{0};
+        int height{0};
+    };
     /**
      * @brief Creates the glyphs that composes the alphabet.
      * @param font Pointer to the TTF_Font that contains a valid font.
@@ -97,8 +107,12 @@ class DrawText
      * @param character Unicode character to write on the screen.
      * @param x Horizontal position for the glyph.
      * @param y Vertical position for the glyph.
+     * @param Constrain sets the drawing limitations.
+     *
+     * If the width or height in the constrain struct are zero the dimension is ignored.
      */
-    void drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y);
+    void drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y,
+                   Constrain constrain = Constrain{0, 0, 0, 0});
 
     /// Initial character for the alphabet.
     uint16_t initialCharacter_;
@@ -109,6 +123,7 @@ class DrawText
     std::map<uint16_t, SDL_Surface*> alphabet_;
 
     bool newLine_{false};
+    bool throwExceptions_{false};
 };
 
 #endif
