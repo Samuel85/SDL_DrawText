@@ -64,11 +64,14 @@ class DrawText
      */
     template <typename... Args> static std::string format(const std::string& text, Args&&... args)
     {
-        size_t n = std::snprintf(nullptr, 0, text.c_str(), std::forward<Args>(args)...) + 1;
-        if (n == 0) {
-            throw std::logic_error("The formated string has a size of zero.");
+        size_t n = std::snprintf(nullptr, 0, text.c_str(), std::forward<Args>(args)...);
+        if (n < 0) {
+            throw std::runtime_error("The formated string has a size of zero.");
         }
-        auto buffer = new char[n];
+        if (n == 0) {
+            return {};
+        }
+        auto buffer = new char[n+1];
         std::snprintf(buffer, n, text.c_str(), std::forward<Args>(args)...);
         std::string result = buffer;
         delete[] buffer;
@@ -76,11 +79,14 @@ class DrawText
     }
     template <typename... Args> static std::wstring format(const std::wstring& text, Args&&... args)
     {
-        int n = std::swprintf(nullptr, 0, text.c_str(), std::forward<Args>(args)...) + 1;
-        if (n == 0) {
-            throw std::logic_error("The formated string has a size of zero.");
+        int n = std::swprintf(nullptr, 0, text.c_str(), std::forward<Args>(args)...);
+        if (n < 0) {
+            throw std::runtime_error("The formated string has a size of zero.");
         }
-        auto buffer = new wchar_t[n];
+        if (n == 0) {
+            return {};
+        }
+        auto buffer = new wchar_t[n+1];
         swprintf(buffer, n, text.c_str(), std::forward<Args>(args)...);
         std::wstring result = buffer;
         delete[] buffer;
@@ -99,7 +105,8 @@ class DrawText
      * @param font Pointer to the TTF_Font that contains a valid font.
      * @param fontColor Color for the glyphs.
      */
-    void createAlphabet(TTF_Font* font, const SDL_Color& fontColor);
+    void createAlphabet(TTF_Font* font, const SDL_Color& fontColor, uint16_t initialCharacter,
+                        uint16_t finalCharacter);
 
     /**
      * @brief Draw a glyph on the screen
@@ -113,12 +120,6 @@ class DrawText
      */
     void drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y,
                    Constrain constrain = Constrain{0, 0, 0, 0});
-
-    /// Initial character for the alphabet.
-    uint16_t initialCharacter_;
-
-    /// Final character for the alphabet.
-    uint16_t finalCharacter_;
 
     std::map<uint16_t, SDL_Surface*> alphabet_;
 
