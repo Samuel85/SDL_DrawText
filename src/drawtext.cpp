@@ -4,132 +4,93 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
-DrawText::DrawText(const char* fontPath, const int fontSize, const SDL_Color& fontColor)
+DrawText::DrawText(const char* fontPath, int fontSize, const SDL_Color& fontColor,
+                   uint16_t initialCharacter, uint16_t finalCharacter, bool throwExceptions)
+    : throwExceptions_{throwExceptions}
 {
+    if (finalCharacter - initialCharacter <= 0) {
+        throw std::logic_error("The final character must be bigger than the initial character.");
+    }
+
     TTF_Font* font = TTF_OpenFont(fontPath, fontSize);
     if (!font) {
         std::stringstream message;
         message << "DrawText::DrawText: " << TTF_GetError();
         throw std::runtime_error(message.str());
     }
-    createAlphabet(font, fontColor);
+    createAlphabet(font, fontColor, initialCharacter, finalCharacter);
     TTF_CloseFont(font);
 }
 
 DrawText::~DrawText()
 {
-    for (auto& i : alphabet) {
-        SDL_FreeSurface(i);
+    for (std::map<uint16_t, SDL_Surface*>::iterator it = alphabet_.begin(); it != alphabet_.end();
+         it++) {
+        SDL_FreeSurface(it->second);
     }
 }
 
-void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor)
+void DrawText::createAlphabet(TTF_Font* font, const SDL_Color& fontColor, uint16_t initialCharacter,
+                              uint16_t finalCharacter)
 {
-    for (Uint16 c = INITIAL_CHARACTER; c <= FINAL_CHARACTER; c++) {
-        alphabet[c - INITIAL_CHARACTER] = TTF_RenderGlyph_Blended(font, c, fontColor);
-    }
-}
-
-void DrawText::drawGlyph(SDL_Surface* destinationSurface, const unsigned char character, int& x,
-                         int& y)
-{
-    if (character == '\n') {
-        SDL_Surface* glyph = alphabet[0];
-        y = y + glyph->h;
-        newLine = true;
-        return;
-    }
-
-    unsigned char i = character - INITIAL_CHARACTER;
-    SDL_Surface* glyph = alphabet[i];
-
-    SDL_Rect dst_rect;
-    dst_rect.x = x;
-    dst_rect.y = y;
-    dst_rect.w = glyph->w;
-    dst_rect.h = glyph->h;
-
-    x = x + glyph->w;
-    SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
-}
-
-void DrawText::print(SDL_Surface* destinationSurface, const std::string& text, int x, int y)
-{
-    auto tmp_x = x;
-    auto tmp_y = y;
-
-    for (const char* c = text.c_str(); *c != '\0'; c++) {
-        if (newLine) {
-            tmp_x = x;
-            newLine = false;
+    for (uint16_t c = initialCharacter; c <= finalCharacter; c++) {
+        auto* glyph = TTF_RenderGlyph_Blended(font, c, fontColor);
+        if (glyph == nullptr) {
+            throw std::runtime_error("Error creating alphabet");
         }
-        drawGlyph(destinationSurface, *c, tmp_x, tmp_y);
+        alphabet_[c] = glyph;
     }
 }
 
-void DrawText::drawGlyphW(SDL_Surface* destinationSurface, const wchar_t character, int& x, int& y)
+static int calculateIncrement(int x0, int w0, int x1, int w1)
 {
-    if (character == '\n') {
-        SDL_Surface* glyph = alphabet[0];
-        y = y + glyph->h;
-        newLine = true;
-        return;
+    int dx = 0;
+    if (w0 == 0) {
+        dx = w1;
+    } else {
+        dx = (x0 + w0) > (x1 + w1) ? w1 : w1 - (x1 + w1 - x0 - w0);
     }
-    unsigned char i = (unsigned char)character - INITIAL_CHARACTER;
-    if (i >= FINAL_CHARACTER) {
-        return;
-    }
-    SDL_Surface* glyph = alphabet[i];
-
-    SDL_Rect dst_rect;
-    dst_rect.x = x;
-    dst_rect.y = y;
-    dst_rect.w = glyph->w;
-    dst_rect.h = glyph->h;
-
-    x = x + glyph->w;
-    SDL_BlitSurface(glyph, NULL, destinationSurface, &dst_rect);
+    return dx;
 }
 
-void DrawText::print(SDL_Surface* destinationSurface, const std::wstring& text, int x, int y)
+void DrawText::drawGlyph(SDL_Surface* destinationSurface, uint16_t character, int& x, int& y,
+                         Constrain constrain)
 {
-    auto tmp_x = x;
-    auto tmp_y = y;
-
-    for (auto character = text.c_str(); *character != '\0'; character++) {
-        if (newLine) {
-            tmp_x = x;
-            newLine = false;
+    if (y > (constrain.x0 + constrain.height) && constrain.height != 0) {
+        return;
+    }
+    auto get_glyph_of_character = [&](uint16_t c) -> SDL_Surface* {
+        try {
+            auto* glyph = alphabet_.at(c);
+            return glyph;
+        } catch (std::out_of_range& e) {
+            if (throwExceptions_) {
+                throw std::logic_error("Trying to print character not defined in alphabet.");
+            }
         }
-        drawGlyphW(destinationSurface, *character, tmp_x, tmp_y);
+        return nullptr;
+    };
+
+    // New line
+    if (character == static_cast<uint16_t>('\n')) {
+        auto* glyph = get_glyph_of_character(alphabet_.begin()->first);
+        y = y + glyph->h;
+        newLine_ = true;
+        return;
     }
-}
-std::string DrawText::format(const std::string text, ...)
-{
-    std::string a;
 
-    char buffer[BUFFER_SIZE] = {};
-    {
-        va_list list;
-        va_start(list, text);
-        vsnprintf(buffer, BUFFER_SIZE, text.c_str(), list);
-        va_end(list);
-    };
-    a = buffer;
-    return a;
-}
+    // Normal character
+    auto* glyph = get_glyph_of_character(character);
+    if (glyph == nullptr) {
+        return;
+    }
 
-std::wstring DrawText::format(const std::wstring text, ...)
-{
-    std::wstring out;
-    wchar_t buffer[BUFFER_SIZE] = {};
-    {
-        va_list list;
-        va_start(list, text);
-        vswprintf(buffer, BUFFER_SIZE, text.c_str(), list);
-        va_end(list);
-    };
-    out = buffer;
-    return out;
+    const int dx = calculateIncrement(constrain.x0, constrain.width, x, glyph->w);
+    const int dy = calculateIncrement(constrain.y0, constrain.height, y, glyph->h);
+    SDL_Rect src_rect = {0, 0, dx, dy};
+    SDL_Rect dst_rect = {x, y, dx, dy};
+    x = x + glyph->w;
+    SDL_BlitSurface(glyph, &src_rect, destinationSurface, &dst_rect);
 }
